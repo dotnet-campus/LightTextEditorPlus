@@ -1,5 +1,7 @@
 ﻿<Project>
- 
+
+  <Import Project="Build\Version.props" />
+
   <PropertyGroup>
     <UseArtifactsOutput Condition="'$(UseArtifactsOutput)' == ''">true</UseArtifactsOutput>
     <ArtifactsPath Condition="'$(ArtifactsPath)' == ''">$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>

@@ -8,8 +8,13 @@
     <Project Path="Analyzers/TextEditorInternalAnalyzer/TextEditorInternalAnalyzer.csproj" />
   </Folder>
   <Folder Name="/Build/">
+    <File Path="Build/Version.props" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/Build/GitHub Actions/">
+    <File Path=".github/workflows/LightTextEditorPlusBuild.yml" />
+    <File Path=".github/workflows/nuget-tag-publish.yml" />
   </Folder>
   <Folder Name="/Demos/">
     <Project Path="Demos/AvaloniaDemo/LightTextEditorPlus.AvaloniaDemo.csproj" />
