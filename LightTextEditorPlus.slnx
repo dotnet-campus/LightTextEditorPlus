@@ -1,0 +1,51 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Analyzers/">
+    <Project Path="Analyzers/TextEditorInternalAnalyzer/TextEditorInternalAnalyzer.csproj" />
+  </Folder>
+  <Folder Name="/Build/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/Demos/">
+    <Project Path="Demos/AvaloniaDemo/LightTextEditorPlus.AvaloniaDemo.csproj" />
+    <Project Path="Demos/LightTextEditorPlus.Demo/LightTextEditorPlus.Demo.csproj" />
+    <Project Path="Demos/LightTextEditorPlus.SkiaDemo/LightTextEditorPlus.SkiaDemo.csproj" />
+  </Folder>
+  <Folder Name="/Docs/">
+    <Project Path="Docs/Docs.csproj" />
+  </Folder>
+  <Folder Name="/Highlighters/">
+    <Project Path="LightTextEditorPlus.Highlighters/LightTextEditorPlus.Highlighters.Avalonia.csproj" />
+    <Project Path="LightTextEditorPlus.Highlighters/LightTextEditorPlus.Highlighters.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/Pack/">
+    <Project Path="AllInOne.Avalonia/LightTextEditorPlus.AllInOne.Avalonia.csproj" />
+    <Project Path="AllInOne.Wpf/LightTextEditorPlus.AllInOne.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/Platform/">
+    <Project Path="LightTextEditorPlus.Avalonia/LightTextEditorPlus.Avalonia.csproj" />
+    <Project Path="LightTextEditorPlus.MauiGraphics/LightTextEditorPlus.MauiGraphics.csproj" />
+    <Project Path="LightTextEditorPlus.Skia.AotLayer/LightTextEditorPlus.Skia.AotLayer.csproj" />
+    <Project Path="LightTextEditorPlus.Skia/LightTextEditorPlus.Skia.csproj" />
+    <Project Path="LightTextEditorPlus.Wpf/LightTextEditorPlus.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="LightTextEditorPlus.Highlighters.Avalonia.UnitTests/LightTextEditorPlus.Highlighters.Avalonia.UnitTests.csproj" />
+    <Project Path="Tests/LightTextEditorPlus.Avalonia.Tests/LightTextEditorPlus.Avalonia.Tests.csproj" />
+    <Project Path="Tests/LightTextEditorPlus.Core.BenchmarkTests/LightTextEditorPlus.Core.BenchmarkTests.csproj" />
+    <Project Path="Tests/LightTextEditorPlus.Core.Tests/LightTextEditorPlus.Core.Tests.csproj" />
+    <Project Path="Tests/LightTextEditorPlus.Core.TestsFramework/LightTextEditorPlus.Core.TestsFramework.csproj" />
+    <Project Path="Tests/LightTextEditorPlus.Skia.UnitTests/LightTextEditorPlus.Skia.UnitTests.csproj" />
+    <Project Path="Tests/LightTextEditorPlus.Tests/LightTextEditorPlus.Tests.csproj" />
+    <Project Path="Tests/TextVisionComparer/TextVisionComparer.csproj" />
+  </Folder>
+  <Project Path="LightTextEditorPlus.Core/LightTextEditorPlus.Core.csproj" />
+</Solution>
