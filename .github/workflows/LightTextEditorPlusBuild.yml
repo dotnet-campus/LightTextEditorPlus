@@ -1,4 +1,4 @@
-name: LightTextEditorPlusBuild
+﻿name: LightTextEditorPlusBuild
 
 on: push
 
@@ -20,11 +20,11 @@ jobs:
           10.0.x
 
     - name: Build
-      run: "dotnet build --configuration release LightTextEditorPlus"
+      run: "dotnet build --configuration release"
     - name: Test
-      run: dotnet test --configuration release -v:n --tl:off --logger:"console;verbosity=detailed" --no-build LightTextEditorPlus
+      run: dotnet test --configuration release -v:n --tl:off --logger:"console;verbosity=detailed" --no-build
     - name: BuildWithAot
-      run: dotnet publish -r win-x86 -p:ValidateExecutableReferencesMatchSelfContained=false .\LightTextEditorPlus\Demos\AvaloniaDemo\LightTextEditorPlus.AvaloniaDemo.csproj
+      run: dotnet publish -r win-x86 -p:ValidateExecutableReferencesMatchSelfContained=false .\Demos\AvaloniaDemo\LightTextEditorPlus.AvaloniaDemo.csproj
 
   BuildInLinux:
     runs-on: ubuntu-latest
@@ -42,10 +42,10 @@ jobs:
           10.0.x
 
     - name: Build LightTextEditorPlus.Core
-      run: dotnet build --configuration release LightTextEditorPlus/LightTextEditorPlus.Core/LightTextEditorPlus.Core.csproj
+      run: dotnet build --configuration release LightTextEditorPlus.Core/LightTextEditorPlus.Core.csproj
     - name: Build LightTextEditorPlus.AvaloniaDemo
-      run: dotnet build --configuration release LightTextEditorPlus/Demos/AvaloniaDemo/LightTextEditorPlus.AvaloniaDemo.csproj
+      run: dotnet build --configuration release Demos/AvaloniaDemo/LightTextEditorPlus.AvaloniaDemo.csproj
     - name: BuildWithAot
-      run: dotnet publish -r linux-x64 -p:ValidateExecutableReferencesMatchSelfContained=false LightTextEditorPlus/Demos/AvaloniaDemo/LightTextEditorPlus.AvaloniaDemo.csproj
+      run: dotnet publish -r linux-x64 -p:ValidateExecutableReferencesMatchSelfContained=false Demos/AvaloniaDemo/LightTextEditorPlus.AvaloniaDemo.csproj
     - name: Test
-      run: dotnet test --configuration release -v:n --tl:off --logger:"console;verbosity=detailed" LightTextEditorPlus/Tests/LightTextEditorPlus.Core.Tests/LightTextEditorPlus.Core.Tests.csproj
+      run: dotnet test --configuration release -v:n --tl:off --logger:"console;verbosity=detailed" Tests/LightTextEditorPlus.Core.Tests/LightTextEditorPlus.Core.Tests.csproj
