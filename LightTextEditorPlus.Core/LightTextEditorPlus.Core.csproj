@@ -9,6 +9,7 @@
     <BanAttributeAPI>TextEditorPublicAPIAttribute</BanAttributeAPI>
     <UseUIFramework>Standard</UseUIFramework>
     <IsTrimmable>true</IsTrimmable>
+    <PackageId>DotNetCampus.LightTextEditorPlus.Core</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

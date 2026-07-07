@@ -8,6 +8,7 @@
     <RootNamespace>LightTextEditorPlus</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <UseUIFramework>Wpf</UseUIFramework>
+    <PackageId>DotNetCampus.LightTextEditorPlus.Wpf</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

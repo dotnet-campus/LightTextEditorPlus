@@ -8,6 +8,7 @@
     <RootNamespace>LightTextEditorPlus</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DefineConstants>$(DefineConstants);USE_WPF</DefineConstants>
+    <PackageId>DotNetCampus.LightTextEditorPlus.Highlighters.Wpf</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

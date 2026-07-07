@@ -7,6 +7,7 @@
     <UseUIFramework>Skia</UseUIFramework>
     <IsTrimmable>true</IsTrimmable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>DotNetCampus.LightTextEditorPlus.Skia</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

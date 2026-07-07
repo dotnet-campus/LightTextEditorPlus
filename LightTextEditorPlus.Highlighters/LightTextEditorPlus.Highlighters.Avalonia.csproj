@@ -6,6 +6,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsTrimmable>true</IsTrimmable>
     <DefineConstants>$(DefineConstants);USE_AVALONIA</DefineConstants>
+    <PackageId>DotNetCampus.LightTextEditorPlus.Highlighters.Avalonia</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Markdig" Version="1.0.0" />

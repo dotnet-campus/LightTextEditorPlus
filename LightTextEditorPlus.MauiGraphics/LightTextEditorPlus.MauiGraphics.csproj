@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <UseUIFramework>MauiGraphics</UseUIFramework>
     <RootNamespace>LightTextEditorPlus</RootNamespace>
+    <PackageId>DotNetCampus.LightTextEditorPlus.MauiGraphics</PackageId>
     <!-- 不发布的原因： 尚未完成 -->
     <IsPackable>false</IsPackable>
   </PropertyGroup>

@@ -6,6 +6,7 @@
     <RootNamespace>LightTextEditorPlus</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsTrimmable>true</IsTrimmable>
+    <PackageId>DotNetCampus.LightTextEditorPlus.Avalonia</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
