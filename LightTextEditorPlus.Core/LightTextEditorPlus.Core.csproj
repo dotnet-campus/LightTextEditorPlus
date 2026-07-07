@@ -9,7 +9,6 @@
     <BanAttributeAPI>TextEditorPublicAPIAttribute</BanAttributeAPI>
     <UseUIFramework>Standard</UseUIFramework>
     <IsTrimmable>true</IsTrimmable>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
