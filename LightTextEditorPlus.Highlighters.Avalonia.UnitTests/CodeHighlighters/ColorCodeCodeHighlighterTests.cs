@@ -60,6 +60,23 @@ public class ColorCodeCodeHighlighterTests
     }
 
     [Fact]
+    public void ApplyHighlight_PowerShellCommandAfterEmoji_ReturnsUtf16CommandRange()
+    {
+        const string code = "Write-Host \"😀\"\nGet-Process";
+        var highlighter = new ColorCodeCodeHighlighter { LanguageId = "powershell" };
+        var coloredSegments = new List<(TextSpan Span, ScopeType Scope)>();
+        var mockColorCode = new Mock<IColorCode>();
+        mockColorCode.Setup(c => c.FillCodeColor(It.IsAny<TextSpan>(), It.IsAny<ScopeType>()))
+            .Callback<TextSpan, ScopeType>((span, scope) => coloredSegments.Add((span, scope)));
+
+        highlighter.ApplyHighlight(new HighlightCodeContext(code, mockColorCode.Object));
+
+        Assert.Contains(coloredSegments, segment =>
+            segment.Scope == ScopeType.Invocation
+            && segment.Span == new TextSpan(code.IndexOf("Get-Process", StringComparison.Ordinal), "Get-Process".Length));
+    }
+
+    [Fact]
     public void ApplyHighlight_CSharpKeywords_HighlightsAllKeywords()
     {
         // Arrange

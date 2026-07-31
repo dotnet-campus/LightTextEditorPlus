@@ -41,11 +41,17 @@ public sealed class ColorCodeCodeHighlighter : ICodeHighlighter
 
         string code = context.PlainCode;
         var coloredSegmentList = new List<ColoredSegment>();
+        var parsedTextLength = 0;
+        var order = 0;
 
         LanguageParser.Parse(code, language, (parsedSourceCode, scopes) =>
         {
-            var order = 0;
-            CollectScope(scopes, coloredSegmentList, ref order);
+            if (parsedSourceCode.Length > 0)
+            {
+                var parsedSourceSpan = new TextSpan(parsedTextLength, parsedSourceCode.Length);
+                CollectScope(scopes, parsedSourceSpan, coloredSegmentList, ref order);
+                parsedTextLength += parsedSourceCode.Length;
+            }
         });
 
         FillTextSegments(code.Length, coloredSegmentList, context.ColorCode);
@@ -62,19 +68,20 @@ public sealed class ColorCodeCodeHighlighter : ICodeHighlighter
         return languageRepository;
     }
 
-    private static void CollectScope(IEnumerable<Scope> scopeList, List<ColoredSegment> coloredSegmentList, ref int order)
+    private static void CollectScope(IEnumerable<Scope> scopeList, TextSpan parsedSourceSpan, List<ColoredSegment> coloredSegmentList, ref int order)
     {
         foreach (var scope in scopeList)
         {
+            var scopeStart = parsedSourceSpan.Start + scope.Index;
             if (scope.Length > 0)
             {
-                coloredSegmentList.Add(new ColoredSegment(new TextSpan(scope.Index, scope.Length), MapScopeType(scope.Name), order));
+                coloredSegmentList.Add(new ColoredSegment(new TextSpan(scopeStart, scope.Length), MapScopeType(scope.Name), order));
                 order++;
             }
 
             if (scope.Children.Count > 0)
             {
-                CollectScope(scope.Children, coloredSegmentList, ref order);
+                CollectScope(scope.Children, parsedSourceSpan, coloredSegmentList, ref order);
             }
         }
     }

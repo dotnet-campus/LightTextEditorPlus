@@ -209,6 +209,18 @@ public class MarkdownCodeBlockHighlightingTests
     }
 
     [Fact]
+    public void ApplyHighlight_PowerShellCodeBlockWithEmojiBeforeCommand_HighlightsExactCommandRange()
+    {
+        const string code = "Write-Host \"😀\"\nGet-Process";
+        var markdown = CreateCodeBlock("powershell", code);
+
+        var markdownEditor = CreateHighlightedEditor(markdown);
+
+        DocumentHighlighterTestHelper.AssertTextPreserved(markdownEditor, markdown);
+        DocumentHighlighterTestHelper.AssertScopeColor(markdownEditor, markdown, "Get-Process", ScopeType.Invocation);
+    }
+
+    [Fact]
     public void ApplyHighlight_CodeBlockWithoutLanguage_KeepsInnerCodeAsPlainText()
     {
         const string markdown = "```\nconst value = 10;\n```";
