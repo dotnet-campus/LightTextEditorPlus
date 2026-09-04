@@ -128,6 +128,10 @@ class HorizontalTextRenderer : TextRendererBase
                     var charSpanDrawInfo = new CharSpanDrawInfo(fallbackGlyphIndex, fallbackGlyphTypeface, codePoint, charData);
                     yield return charSpanDrawInfo;
                 }
+                else
+                {
+                    // 此字符将被完全放弃渲染，因为连 Fallback 字体都没有能支持
+                }
             }
         }
     }
