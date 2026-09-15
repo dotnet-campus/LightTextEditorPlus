@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -9,6 +9,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DefineConstants>$(DefineConstants);USE_WPF</DefineConstants>
     <PackageId>DotNetCampus.LightTextEditorPlus.Highlighters.Wpf</PackageId>
+    <!-- 不发布的原因： 还没打磨好 -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

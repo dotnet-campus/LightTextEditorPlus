@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -7,6 +7,8 @@
     <IsTrimmable>true</IsTrimmable>
     <DefineConstants>$(DefineConstants);USE_AVALONIA</DefineConstants>
     <PackageId>DotNetCampus.LightTextEditorPlus.Highlighters.Avalonia</PackageId>
+    <!-- 不发布的原因： 还没打磨好 -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Markdig" Version="1.0.0" />
