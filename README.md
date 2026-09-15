@@ -1,18 +1,103 @@
-﻿# 文本库
+# 文本库
 
-富文本布局库
+[![Build](https://github.com/dotnet-campus/LightTextEditorPlus/actions/workflows/LightTextEditorPlusBuild.yml/badge.svg)](https://github.com/dotnet-campus/LightTextEditorPlus/actions/workflows/LightTextEditorPlusBuild.yml)
+[![NuGet WPF](https://img.shields.io/nuget/v/DotNetCampus.LightTextEditorPlus.AllInOne.Wpf.svg?label=WPF)](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.AllInOne.Wpf)
+[![NuGet Avalonia](https://img.shields.io/nuget/v/DotNetCampus.LightTextEditorPlus.AllInOne.Avalonia.svg?label=Avalonia)](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.AllInOne.Avalonia)
+[![NuGet Skia](https://img.shields.io/nuget/v/DotNetCampus.LightTextEditorPlus.Skia.svg?label=Skia)](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.Skia)
+[![NuGet Core](https://img.shields.io/nuget/v/DotNetCampus.LightTextEditorPlus.Core.svg?label=Core)](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.Core)
 
-支持替换平台渲染和平台测量层，可采用 WPF 或 MAUI 或其他基础框架作为基础平台层。可直接对接 WPF 或 MAUI 等 UI 框架。通过对接不同的基础平台可实现跨平台功能
+高控制的富文本布局库。当前可当成简单的 `TextBlock` 或 `TextBox` 使用，并附带基础富文本能力。
 
-总进度：可当成简单的 TextBlock 或 TextBox 使用。附带比较弱的富文本功能
+## 安装
 
-平台进度：
+业务项目推荐直接引用 AllInOne 包，一个包即可接入对应 UI 框架。
 
-- [x] WPF
-- [x] Avalonia
-- [x] Skia 渲染（仅渲染，不提供编辑功能）
-- [ ] MAUI
-- [ ] UNO
+### WPF
+
+```xml
+<PackageReference Include="DotNetCampus.LightTextEditorPlus.AllInOne.Wpf" Version="*" />
+```
+
+或：
+
+```bash
+dotnet add package DotNetCampus.LightTextEditorPlus.AllInOne.Wpf
+```
+
+### Avalonia
+
+```xml
+<PackageReference Include="DotNetCampus.LightTextEditorPlus.AllInOne.Avalonia" Version="*" />
+```
+
+或：
+
+```bash
+dotnet add package DotNetCampus.LightTextEditorPlus.AllInOne.Avalonia
+```
+
+### 包一览
+
+AllInOne 把对应平台所需源码打进同一个程序集，业务项目只引一个包。分层包则拆成 Core / 平台层，适合需要自己拼依赖、或只要渲染不要编辑的场景。
+
+| 包名 | 用途 |
+|---|---|
+| [DotNetCampus.LightTextEditorPlus.AllInOne.Wpf](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.AllInOne.Wpf) | WPF 业务接入推荐包，含 Core 与 WPF |
+| [DotNetCampus.LightTextEditorPlus.AllInOne.Avalonia](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.AllInOne.Avalonia) | Avalonia 业务接入推荐包，含 Core、Skia 与 Avalonia |
+| [DotNetCampus.LightTextEditorPlus.Wpf](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.Wpf) | WPF 平台层，依赖 Core |
+| [DotNetCampus.LightTextEditorPlus.Avalonia](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.Avalonia) | Avalonia 平台层，依赖 Skia |
+| [DotNetCampus.LightTextEditorPlus.Skia](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.Skia) | Skia 渲染层，仅渲染，不提供编辑 |
+| [DotNetCampus.LightTextEditorPlus.Core](https://www.nuget.org/packages/DotNetCampus.LightTextEditorPlus.Core) | 平台无关核心排版库 |
+
+请将 `Version="*"` 替换为 NuGet 上的实际版本。
+
+## 快速开始
+
+WPF：
+
+```xml
+xmlns:textEditorPlus="clr-namespace:LightTextEditorPlus;assembly=LightTextEditorPlus.Wpf"
+
+<textEditorPlus:TextEditor x:Name="TextEditor" />
+```
+
+Avalonia：
+
+```xml
+xmlns:textEditorPlus="clr-namespace:LightTextEditorPlus;assembly=LightTextEditorPlus.Avalonia"
+
+<textEditorPlus:TextEditor x:Name="TextEditor" />
+```
+
+设置和追加文本：
+
+```csharp
+TextEditor textEditor = ...
+textEditor.Text = "Text";
+textEditor.AppendText("123");
+```
+
+设置字号、加粗：
+
+```csharp
+TextEditor textEditor = ...
+textEditor.AppendText("abc");
+textEditor.SetFontSize(25);
+textEditor.ToggleBold(textEditor.GetAllDocumentSelection());
+```
+
+设置水平居中：
+
+```csharp
+TextEditor textEditor = ...
+textEditor.Text = "Text";
+textEditor.ConfigCurrentCaretOffsetParagraphProperty(property => property with
+{
+    HorizontalTextAlignment = HorizontalTextAlignment.Center
+});
+```
+
+更多 API 示例见 [使用说明文档](./Docs/使用说明文档.md)。NuGet 包内也包含该文档，路径为 `docs/使用说明文档.md`，便于本地或 AI 工具阅读。
 
 ## 功能
 
@@ -32,100 +117,12 @@
 - 命中测试，属性和光标系统
 - 文本公式混排，图文混排
 - 四线格法行内排版
-
 - 蒙文、藏文、合写字（需要平台层给力才行）
-
-开发侧功能：
-
-- 可注入单元测试和模拟测试
-- 可脱离渲染引擎，通过 Mock 进行驱动
-- 核心库无依赖，无第三方依赖。具体平台对接层的依赖取决于具体的平台对接层需求
-- 高可控。可以控制各个模块和逻辑，可以注入干扰排版过程
-- 长文本性能友好，支持渲染缓存，支持不可见优化
-- 分层 API 设计，既有简单易用的初级 API 层，也有功能强大复杂的高级 API 层
-- 支持注入日志和配置进入调试模式
-
-## 架构
-
-从整体的角度：
-
-![](http://cdn.lindexi.site/lindexi%2F202211916957655.jpg)
-
-分层的角度：
-
-![](http://cdn.lindexi.site/lindexi%2F20221191610494994.jpg)
-
-调用关系：
-
-![](http://cdn.lindexi.site/lindexi%2F20221191611114337.jpg)
-
-依赖关系：
-
-![](http://cdn.lindexi.site/lindexi%2F20221191611321914.jpg)
-
-数据走向：
-
-![](http://cdn.lindexi.site/lindexi%2F20221192012258129.jpg)
-
-## 各个项目的作用
-
-### LightTextEditorPlus.Core
-
-文本库的平台无关实现，实现了文本的基础排版布局功能。提供给具体平台框架对接的接口，可以在不同的平台框架上，使用具体平台框架的文本渲染引擎提供具体的文本排版布局信息，以及在排版布局完成之后，对接具体平台的渲染
-
-入口类型：TextEditorCore
-
-### LightTextEditorPlus.Wpf
-
-使用 WPF 框架承载的文本库，平台相关具体实现。底层使用 `LightTextEditorPlus.Core` 进行驱动，渲染层和 IME 输入法等使用 WPF 提供
-
-### LightTextEditorPlus.Skia
-
-使用 Skia 提供平台渲染能力，底层使用 `LightTextEditorPlus.Core` 进行驱动。这一层只提供渲染支持，不提供输入交互编辑功能
-
-### LightTextEditorPlus.Avalonia
-
-基于 `LightTextEditorPlus.Skia` 进行的 Avalonia 平台对接。提供 Avalonia 平台的文本编辑功能，以及文本框控件接入功能
-
-入口文件： TextEditor.ava.cs
-
-### LightTextEditorPlus.MauiGraphics
-
-使用 MAUI 框架承载的文本库，使用到 MAUI 的渲染层。仅提供渲染输出功能，不提供编辑功能。支持多平台渲染。底层核心对接是 SKIA 技术
-
-## 文本状态
-
-### 文本是脏的
-
-默认创建出来的文本是脏的，需要布局完成之后，才不是脏的。在文本是脏的状态下，禁止获取文本布局相关信息
-
-在文本进行任何编辑动作之后，文本也会标记为是脏的。等待文本布局完成之后，才不是脏的
-
-## 调试机制
-
-### 设置调试模式
-
-可以调用 TextEditorCore 的 SetInDebugMode 方法，让单个文本对象进入调试模式。进入调试模式之后，将会有更多的输出信息，和可能抛出 TextEditorDebugException 调试异常
-
-如期望对所有的文本都进入调试模式，可以调用 `TextEditorCore.SetAllInDebugMode` 静态方法
-
-请不要在发布版本开启调试模式，开启调试模式之后，将会影响文本的性能
-
-### 布局原因
-
-通过 TextEditorCore 的 `_layoutUpdateReasonManager` 字段即可了解到框架内记录的触发布局的原因
-
-## 行为定义
-
-由于文本库在实现的时候，许多功能都需要选择其中某个方式，有些选择是冲突的，而且选择的方向本身将会影响整体的框架和具体的实现。关于文本库所选择的行为，详细请参阅 [行为定义.md](./行为定义.md)
-
-## 相似的项目
-
-https://github.com/toptensoftware/RichTextKit : Rich text rendering for SkiaSharp
 
 ## 文档导航
 
 - [使用说明文档](./Docs/使用说明文档.md)
+- [框架设计](./Docs/框架设计.md)
 - [维护文档](./Docs/维护文档.md)
 - [行为定义](./Docs/行为定义.md)
 - [实现定义](./Docs/实现定义.md)
