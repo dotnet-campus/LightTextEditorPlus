@@ -1,4 +1,4 @@
-﻿using LightTextEditorPlus.Core.Document;
+using LightTextEditorPlus.Core.Document;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -133,9 +133,9 @@ class LayoutHitTestProvider
         CaretOffset hitCaretOffset;
 
         TextRect outlineBounds = documentLayoutBounds.DocumentOutlineBounds;
-        if (outlineBounds.Contains(point))
+        if (point.Y >= outlineBounds.Top && point.Y <= outlineBounds.Bottom)
         {
-            // 在文档的外接范围内，但不在内容范围内
+            // 纵向仍在文档范围内时，即使横向越界，也按所在行命中行首或行末。
             foreach (ParagraphRenderInfo paragraphRenderInfo in renderInfoProvider.GetParagraphRenderInfoList())
             {
                 foreach (LineLayoutData lineLayoutData in paragraphRenderInfo.ParagraphData.LineLayoutDataList)
@@ -153,11 +153,12 @@ class LayoutHitTestProvider
             result = default;
 
             TextRect lineOutlineBounds = lineLayoutData.OutlineBounds;
-            if (!lineOutlineBounds.Contains(point))
+            if (point.Y < lineOutlineBounds.Top || point.Y > lineOutlineBounds.Bottom)
             {
                 return false;
             }
 
+            // 即使横向超过文档范围，只要纵向仍在当前行内，也应命中该行的行首或行末。
             // 在当前行的范围内，对于横排来说，应该再次判断是行的左边还是右边
             TextRect lineContentBounds = lineLayoutData.GetLineContentBounds();
             var isLeft = point.X <= lineContentBounds.Left;

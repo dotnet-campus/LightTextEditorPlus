@@ -84,6 +84,32 @@ public class TextEditorHandlerTest
     }
 
     [UIContractTestCase]
+    public void DragSelectPastDocumentLeftShouldSelectToFirstLineStart()
+    {
+        "从首行向左拖出文档边界时，应选择到首行行首".Test(async () =>
+        {
+            using var context = TestFramework.CreateTextEditorInNewWindow();
+            var textEditor = context.TextEditor;
+            textEditor.Text = "1\n2\n";
+            await textEditor.WaitForRenderCompletedAsync();
+
+            var selectionAnchor = new CaretOffset(1);
+            TextPoint anchorPoint = GetClickPoint(textEditor, selectionAnchor);
+            var documentBounds = textEditor.TextEditorCore.GetRenderInfo().GetDocumentLayoutBounds().DocumentOutlineBounds;
+            var dragPoint = new TextPoint(documentBounds.Left - 1, anchorPoint.Y);
+            textEditor.CurrentSelection = new Selection(selectionAnchor, selectionAnchor);
+
+            var handler = new TestTextEditorHandler(textEditor);
+            handler.SetClickCountForTest(1);
+
+            bool isHandled = handler.DragSelect(dragPoint);
+
+            Assert.IsTrue(isHandled);
+            Assert.AreEqual(new Selection(selectionAnchor, new CaretOffset(0)), textEditor.CurrentSelection);
+        });
+    }
+
+    [UIContractTestCase]
     public void ShiftRightShouldExtendSelectionFromHandler()
     {
         "键盘 Shift + Right 处理应通过处理器扩展选择".Test(async () =>
