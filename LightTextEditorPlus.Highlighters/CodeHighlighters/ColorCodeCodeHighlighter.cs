@@ -49,7 +49,7 @@ public sealed class ColorCodeCodeHighlighter : ICodeHighlighter
             if (parsedSourceCode.Length > 0)
             {
                 var parsedSourceSpan = new TextSpan(parsedTextLength, parsedSourceCode.Length);
-                CollectScope(scopes, parsedSourceSpan, coloredSegmentList, ref order);
+                CollectScope(scopes, parsedSourceSpan, coloredSegmentList, ref order, null);
                 parsedTextLength += parsedSourceCode.Length;
             }
         });
@@ -68,20 +68,22 @@ public sealed class ColorCodeCodeHighlighter : ICodeHighlighter
         return languageRepository;
     }
 
-    private static void CollectScope(IEnumerable<Scope> scopeList, TextSpan parsedSourceSpan, List<ColoredSegment> coloredSegmentList, ref int order)
+    private static void CollectScope(IEnumerable<Scope> scopeList, TextSpan parsedSourceSpan,
+        List<ColoredSegment> coloredSegmentList, ref int order, ScopeType? inheritedScopeType)
     {
         foreach (var scope in scopeList)
         {
             var scopeStart = parsedSourceSpan.Start + scope.Index;
-            if (scope.Length > 0)
+            var scopeType = MapScopeType(scope.Name) ?? inheritedScopeType;
+            if (scope.Length > 0 && scopeType is { } knownScopeType)
             {
-                coloredSegmentList.Add(new ColoredSegment(new TextSpan(scopeStart, scope.Length), MapScopeType(scope.Name), order));
+                coloredSegmentList.Add(new ColoredSegment(new TextSpan(scopeStart, scope.Length), knownScopeType, order));
                 order++;
             }
 
             if (scope.Children.Count > 0)
             {
-                CollectScope(scope.Children, parsedSourceSpan, coloredSegmentList, ref order);
+                CollectScope(scope.Children, parsedSourceSpan, coloredSegmentList, ref order, scopeType);
             }
         }
     }
@@ -189,12 +191,9 @@ public sealed class ColorCodeCodeHighlighter : ICodeHighlighter
             }
         }
 
-        if (bestSegment is null)
-        {
-            return new ColoredSegment(currentSpan, ScopeType.PlainText, -1);
-        }
-
-        return new ColoredSegment(currentSpan, bestSegment.Value.Scope, bestSegment.Value.Order);
+        return bestSegment is null
+            ? new ColoredSegment(currentSpan, ScopeType.PlainText, -1)
+            : new ColoredSegment(currentSpan, bestSegment.Value.Scope, bestSegment.Value.Order);
     }
 
     private static bool IsBetter(ColoredSegment current, ColoredSegment existing)
@@ -208,21 +207,22 @@ public sealed class ColorCodeCodeHighlighter : ICodeHighlighter
         return current.Order > existing.Order;
     }
 
-    private static ScopeType MapScopeType(string? scopeName)
+    private static ScopeType? MapScopeType(string? scopeName)
     {
         return scopeName switch
         {
-            ScopeName.Comment or ScopeName.HtmlComment or ScopeName.XmlComment or ScopeName.XmlDocComment => ScopeType.Comment,
-            ScopeName.ClassName or ScopeName.Type or ScopeName.NameSpace => ScopeType.ClassName,
+            ScopeName.Comment or ScopeName.HtmlComment or ScopeName.XmlComment or ScopeName.XmlDocComment or ScopeName.XmlDocTag => ScopeType.Comment,
+            ScopeName.ClassName or ScopeName.Type or ScopeName.NameSpace or ScopeName.PowerShellType => ScopeType.ClassName,
             ScopeName.Keyword or ScopeName.ControlKeyword or ScopeName.PreprocessorKeyword or ScopeName.PseudoKeyword => ScopeType.Keyword,
-            ScopeName.String or ScopeName.StringCSharpVerbatim or ScopeName.StringEscape or ScopeName.HtmlAttributeValue or ScopeName.XmlAttributeValue or ScopeName.JsonString => ScopeType.String,
+            ScopeName.String or ScopeName.StringCSharpVerbatim or ScopeName.StringEscape or ScopeName.HtmlAttributeValue or ScopeName.XmlAttributeValue or ScopeName.JsonString or ScopeName.MarkdownCode => ScopeType.String,
             ScopeName.Number or ScopeName.JsonNumber => ScopeType.Number,
-            ScopeName.Brackets or ScopeName.Delimiter or ScopeName.HtmlTagDelimiter or ScopeName.XmlDelimiter or ScopeName.XmlAttributeQuotes => ScopeType.Brackets,
-            ScopeName.PowerShellVariable or ScopeName.TypeVariable => ScopeType.Variable,
+            ScopeName.Brackets or ScopeName.Delimiter or ScopeName.HtmlTagDelimiter or ScopeName.XmlDelimiter or ScopeName.XmlAttributeQuotes or ScopeName.Operator or ScopeName.HtmlOperator or ScopeName.PowerShellOperator => ScopeType.Brackets,
+            ScopeName.PowerShellVariable or ScopeName.TypeVariable or ScopeName.PowerShellParameter => ScopeType.Variable,
             ScopeName.BuiltinFunction or ScopeName.PowerShellCommand or ScopeName.SqlSystemFunction or ScopeName.Constructor => ScopeType.Invocation,
-            ScopeName.HtmlElementName or ScopeName.HtmlAttributeName or ScopeName.XmlAttribute or ScopeName.XmlName or ScopeName.CssPropertyName or ScopeName.CssSelector or ScopeName.JsonKey or ScopeName.Attribute => ScopeType.ClassMember,
-            ScopeName.BuiltinValue or ScopeName.Predefined or ScopeName.Intrinsic or ScopeName.PowerShellType or ScopeName.CssPropertyValue or ScopeName.JsonConst or ScopeName.SpecialCharacter or ScopeName.HtmlEntity or ScopeName.XmlCDataSection => ScopeType.DeclarationTypeSyntax,
-            _ => ScopeType.PlainText,
+            ScopeName.HtmlElementName or ScopeName.HtmlAttributeName or ScopeName.XmlAttribute or ScopeName.XmlName or ScopeName.CssPropertyName or ScopeName.CssSelector or ScopeName.JsonKey or ScopeName.Attribute or ScopeName.PowerShellAttribute => ScopeType.ClassMember,
+            ScopeName.BuiltinValue or ScopeName.Predefined or ScopeName.Intrinsic or ScopeName.CssPropertyValue or ScopeName.JsonConst or ScopeName.SpecialCharacter or ScopeName.HtmlEntity or ScopeName.XmlCDataSection or ScopeName.HtmlServerSideScript or ScopeName.MarkdownHeader or ScopeName.MarkdownListItem or ScopeName.MarkdownEmph or ScopeName.MarkdownBold or ScopeName.Continuation => ScopeType.DeclarationTypeSyntax,
+            ScopeName.PlainText => null,
+            _ => null,
         };
     }
 }

@@ -142,6 +142,25 @@ public class ColorCodeCodeHighlighterTests
     }
 
     [Fact]
+    public void ApplyHighlight_CSharpXmlDocumentationTag_PreservesParentCommentScope()
+    {
+        const string code = "/// <summary>Text</summary>";
+        var highlighter = new ColorCodeCodeHighlighter { LanguageId = "csharp" };
+        var coloredSegments = new List<(TextSpan Span, ScopeType Scope)>();
+        var mockColorCode = new Mock<IColorCode>();
+        mockColorCode.Setup(c => c.FillCodeColor(It.IsAny<TextSpan>(), It.IsAny<ScopeType>()))
+            .Callback<TextSpan, ScopeType>((span, scope) => coloredSegments.Add((span, scope)));
+
+        highlighter.ApplyHighlight(new HighlightCodeContext(code, mockColorCode.Object));
+
+        var documentationStart = code.IndexOf('<');
+        Assert.Contains(coloredSegments, segment =>
+            segment.Scope == ScopeType.Comment
+            && segment.Span.Start <= documentationStart
+            && segment.Span.End == code.Length);
+    }
+
+    [Fact]
     public void ApplyHighlight_CSharpMultiLineComment_HighlightsComment()
     {
         // Arrange
