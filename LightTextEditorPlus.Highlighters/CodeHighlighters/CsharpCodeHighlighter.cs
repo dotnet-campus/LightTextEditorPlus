@@ -56,7 +56,8 @@ public class CsharpCodeHighlighter : ICodeHighlighter
             if (trivia.IsKind(SyntaxKind.SingleLineCommentTrivia)
                 || trivia.IsKind(SyntaxKind.MultiLineCommentTrivia)
                 || trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
-                || trivia.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
+                || trivia.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia)
+                || trivia.IsKind(SyntaxKind.DocumentationCommentExteriorTrivia))
             {
                 highlightedSegments.Add((trivia.Span, ScopeType.Comment));
             }

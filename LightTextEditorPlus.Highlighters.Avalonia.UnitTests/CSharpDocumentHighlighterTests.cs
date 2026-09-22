@@ -390,7 +390,38 @@ public class CSharpDocumentHighlighterTests
         highlighter.ApplyHighlight(text);
 
         DocumentHighlighterTestHelper.AssertTextPreserved(textEditor, text);
-        DocumentHighlighterTestHelper.AssertDocumentContainsNonPlainTextColor(textEditor);
+        DocumentHighlighterTestHelper.AssertScopeColor(textEditor, text, "///", ScopeType.Comment);
+        DocumentHighlighterTestHelper.AssertScopeColor(textEditor, text, "summary", ScopeType.Comment);
+    }
+
+    [Fact]
+    public void ApplyHighlight_MultiLineDocumentationComment_HighlightsEveryTripleSlashAsComment()
+    {
+        var text = """
+        public class BoardMcpTool
+        {
+            /// <summary>
+            /// 获取当前画板里面的页面数量
+            /// </summary>
+            /// <param name="server"></param>
+            /// <returns></returns>
+            [McpServerTool(ReadOnly = false, Idempotent = true)]
+            public async Task<CallToolResult> GetSlideCount(IMcpServerCallToolContext server)
+            {
+                 return "待实现";
+            }
+        }
+        """;
+        var textEditor = new TextEditor();
+        var highlighter = new CSharpDocumentHighlighter(textEditor);
+        textEditor.AppendText(text);
+
+        highlighter.ApplyHighlight(text);
+
+        for (var occurrence = 0; occurrence < 5; occurrence++)
+        {
+            DocumentHighlighterTestHelper.AssertScopeColor(textEditor, text, "///", ScopeType.Comment, occurrence);
+        }
     }
 
     [Fact]

@@ -140,6 +140,24 @@ public class CsharpCodeHighlighterTests
     }
 
     [Fact]
+    public void ApplyHighlight_DocumentationCommentExterior_HighlightsTripleSlashAsComment()
+    {
+        const string code = "/// <summary>Documentation</summary>";
+        var highlighter = new CsharpCodeHighlighter();
+        var coloredSegments = new List<(TextSpan Span, ScopeType Scope)>();
+        var mockColorCode = new Mock<IColorCode>();
+        mockColorCode.Setup(x => x.FillCodeColor(It.IsAny<TextSpan>(), It.IsAny<ScopeType>()))
+            .Callback<TextSpan, ScopeType>((span, scope) => coloredSegments.Add((span, scope)));
+
+        highlighter.ApplyHighlight(new HighlightCodeContext(code, mockColorCode.Object));
+
+        Assert.Contains(coloredSegments, segment =>
+            segment.Scope == ScopeType.Comment
+            && segment.Span.Start == 0
+            && segment.Span.Length == 3);
+    }
+
+    [Fact]
     public void ApplyHighlight_MultiLineComment_HighlightsComment()
     {
         // Arrange
