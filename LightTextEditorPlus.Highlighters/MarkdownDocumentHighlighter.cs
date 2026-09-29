@@ -329,7 +329,19 @@ public sealed partial class MarkdownDocumentHighlighter : IDocumentHighlighter
         {
             foreach (var operation in snapshot.OperationList)
             {
-                setter.TrySetRunProperty(ScopeType.PlainText, operation.RunProperty, operation.SourceSpan);
+                // 换行属性由上一行末字符派生；跨行设置会反复尝试修改无法独立存储的样式。
+                var start = operation.SourceSpan.Start;
+                for (var index = start; index <= operation.SourceSpan.End; index++)
+                {
+                    if (markdownText[index] is not ('\r' or '\n'))
+                        continue;
+                    if (start < index)
+                        setter.TrySetRunProperty(ScopeType.PlainText, operation.RunProperty, new SourceSpan(start, index - 1));
+                    start = index + 1;
+                }
+                if (start <= operation.SourceSpan.End)
+                    setter.TrySetRunProperty(ScopeType.PlainText, operation.RunProperty,
+                        new SourceSpan(start, operation.SourceSpan.End));
             }
 
             if (snapshot.CodeBlockHighlightSnapshot is not { } codeBlockHighlightSnapshot)

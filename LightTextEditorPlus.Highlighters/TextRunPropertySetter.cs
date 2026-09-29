@@ -33,28 +33,8 @@ internal readonly record struct TextRunPropertySetter(TextEditor TextEditor)
         init
         {
             _plainText = value;
-            _documentOffsets = value is null ? null : CreateDocumentOffsets(value);
+            _documentOffsets = value is null ? null : SparseDocumentOffsets.Create(value);
         }
-    }
-
-    private static int[] CreateDocumentOffsets(string text)
-    {
-        var offsets = new int[text.Length + 1];
-        var offset = 0;
-        for (var i = 0; i < text.Length; i++)
-        {
-            if (text[i] != '\n' || i == 0 || text[i - 1] != '\r')
-            {
-                offset++;
-            }
-            offsets[i + 1] = offset;
-            // 与 Rune 枚举一致：代理对中间位置也映射到该字符之后。
-            if (char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
-            {
-                offsets[++i + 1] = offset;
-            }
-        }
-        return offsets;
     }
 
     public void SetRunProperty(ConfigRunProperty config, SourceSpan span)
@@ -91,7 +71,12 @@ internal readonly record struct TextRunPropertySetter(TextEditor TextEditor)
     {
         TextEditor.TextEditorCore.SetUndoRedoEnable(false, "框架内部设置文本样式，防止将内容动作记录");
         IEnumerable<RunProperty> runPropertyRange = TextEditor.GetRunPropertyRange(selection);
+#if USE_AVALONIA
+        // 字体回退是渲染层派生状态，不应导致相同的高亮样式被反复应用。
+        var same = runPropertyRange.All(t => SkiaTextRunPropertyEqualityComparers.IgnoreRenderPropertyComparer.Equals(t, runProperty));
+#else
         var same = runPropertyRange.All(t => t.Equals(runProperty));
+#endif
         if (!same)
         {
             TextEditor.SetRunProperty(runProperty, selection);
@@ -120,13 +105,9 @@ internal readonly record struct TextRunPropertySetter(TextEditor TextEditor)
     /// </summary>
     private int GetDocumentCharOffsetFromPlainText(int utf16Index)
     {
-        if (_documentOffsets is { Length: > 1 } offsets)
+        if (_documentOffsets is { } offsets && _plainText is { Length: > 0 } text)
         {
-            if ((uint) utf16Index >= (uint) offsets.Length)
-            {
-                throw new ArgumentOutOfRangeException(nameof(utf16Index));
-            }
-            return offsets[utf16Index];
+            return SparseDocumentOffsets.Convert(offsets, text.Length, utf16Index);
         }
 
         var plainText = PlainText;
