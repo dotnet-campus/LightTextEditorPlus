@@ -24,7 +24,38 @@ internal readonly record struct TextRunPropertySetter(TextEditor TextEditor)
 {
     public DocumentOffset StartOffset { get; init; } = 0;
 
-    public string? PlainText { get; init; }
+    private readonly string? _plainText;
+    private readonly int[]? _documentOffsets;
+
+    public string? PlainText
+    {
+        get => _plainText;
+        init
+        {
+            _plainText = value;
+            _documentOffsets = value is null ? null : CreateDocumentOffsets(value);
+        }
+    }
+
+    private static int[] CreateDocumentOffsets(string text)
+    {
+        var offsets = new int[text.Length + 1];
+        var offset = 0;
+        for (var i = 0; i < text.Length; i++)
+        {
+            if (text[i] != '\n' || i == 0 || text[i - 1] != '\r')
+            {
+                offset++;
+            }
+            offsets[i + 1] = offset;
+            // 与 Rune 枚举一致：代理对中间位置也映射到该字符之后。
+            if (char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
+            {
+                offsets[++i + 1] = offset;
+            }
+        }
+        return offsets;
+    }
 
     public void SetRunProperty(ConfigRunProperty config, SourceSpan span)
     {
@@ -89,6 +120,15 @@ internal readonly record struct TextRunPropertySetter(TextEditor TextEditor)
     /// </summary>
     private int GetDocumentCharOffsetFromPlainText(int utf16Index)
     {
+        if (_documentOffsets is { Length: > 1 } offsets)
+        {
+            if ((uint) utf16Index >= (uint) offsets.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(utf16Index));
+            }
+            return offsets[utf16Index];
+        }
+
         var plainText = PlainText;
         if (string.IsNullOrEmpty(plainText))
         {

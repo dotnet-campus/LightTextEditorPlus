@@ -134,7 +134,7 @@ public sealed partial class MarkdownDocumentHighlighter : IDocumentHighlighter
     /// <param name="markdownText">要高亮的 Markdown 文本。</param>
     public void ApplyHighlight(string markdownText)
     {
-        var setter = new TextRunPropertySetter(_textEditor);
+        var setter = new TextRunPropertySetter(_textEditor) { PlainText = markdownText };
 
         var markdownDocument = Markdown.Parse(markdownText, MarkdownPipeline);
         var currentHighlightSnapshotList = new List<HighlightSegmentSnapshot>();
@@ -276,10 +276,9 @@ public sealed partial class MarkdownDocumentHighlighter : IDocumentHighlighter
 
         HighlightSegmentSnapshot CreateParagraphSegmentSnapshot(SourceSpan sourceSpan)
         {
-            var operationList = new List<HighlightOperation>
-            {
-                new HighlightOperation(_normalTextRunProperty, sourceSpan)
-            };
+            // 避免先清除再恢复未改变的链接样式。
+            var operationList = new List<HighlightOperation>();
+            var normalStart = sourceSpan.Start;
 
             string text = ToText(sourceSpan);
             if (string.IsNullOrEmpty(text))
@@ -303,10 +302,21 @@ public sealed partial class MarkdownDocumentHighlighter : IDocumentHighlighter
                 int start = sourceSpan.Start + match.Index;
                 var urlSourceSpan = new SourceSpan(start, start + urlText.Length - 1);
 
+                if (normalStart < start)
+                {
+                    operationList.Add(new HighlightOperation(_normalTextRunProperty,
+                        new SourceSpan(normalStart, start - 1)));
+                }
                 operationList.Add(new HighlightOperation(_urlRunProperty, urlSourceSpan));
+                normalStart = urlSourceSpan.End + 1;
                 _urlInfoList.Add(new MarkdownUrlInfo(urlSourceSpan, urlText.ToString()));
             }
 
+            if (normalStart <= sourceSpan.End)
+            {
+                operationList.Add(new HighlightOperation(_normalTextRunProperty,
+                    new SourceSpan(normalStart, sourceSpan.End)));
+            }
             return new HighlightSegmentSnapshot(sourceSpan, operationList, null);
         }
 
